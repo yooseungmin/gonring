@@ -1,0 +1,53 @@
+{
+  "name": "tb-hub-clean",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "dev:server": "cd backend && uvicorn main:app --reload --port 8000",
+    "dev:server:debug": "cd backend && uvicorn main:app --reload --port 8000 --log-level debug",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\""
+  },
+  "dependencies": {
+    "@tiptap/extension-blockquote": "^3.0.7",
+    "@tiptap/extension-bullet-list": "^3.0.7",
+    "@tiptap/extension-code-block": "^3.0.7",
+    "@tiptap/extension-heading": "^3.0.7",
+    "@tiptap/extension-highlight": "^3.0.7",
+    "@tiptap/extension-horizontal-rule": "^3.0.7",
+    "@tiptap/extension-image": "^3.0.7",
+    "@tiptap/extension-link": "^3.0.7",
+    "@tiptap/extension-ordered-list": "^3.0.7",
+    "@tiptap/extension-placeholder": "^3.0.7",
+    "@tiptap/pm": "^3.0.7",
+    "@tiptap/react": "^3.0.7",
+    "@tiptap/starter-kit": "^3.0.7",
+    "@types/turndown": "^5.0.5",
+    "@types/uuid": "^10.0.0",
+    "axios": "^1.11.0",
+    "framer-motion": "^12.23.9",
+    "lucide-react": "^0.525.0",
+    "next": "15.4.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "turndown": "^7.2.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
