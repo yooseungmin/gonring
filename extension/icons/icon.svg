@@ -1,0 +1,10 @@
+<!-- SVG 아이콘 (확장프로그램 사용을 위해 Base64로 인코딩되어 PNG로 저장되어야 함) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" fill="#4285f4" rx="24" />
+  <path fill="#ffffff" d="M40 44 L40 84 L88 84 L88 44 Z" stroke="#ffffff" stroke-width="8" fill="none" />
+  <path fill="#ffffff" d="M32 32 L96 32" stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+  <path fill="#ffffff" d="M56 48 L72 48" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  <path fill="#ffffff" d="M48 64 L80 64" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  <path fill="#ffffff" d="M60 80 L68 80" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  <path fill="#ffffff" d="M40 96 L88 96" stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+</svg>

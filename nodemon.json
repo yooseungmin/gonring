@@ -1,0 +1,6 @@
+{
+  "watch": ["src", "backend"],
+  "ext": "ts,js,json,py",
+  "ignore": ["node_modules", ".next", "**/__pycache__", "*.pyc"],
+  "exec": "ts-node --project tsconfig.json"
+}

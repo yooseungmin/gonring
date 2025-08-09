@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "TaggingBox",
+  "version": "1.0.0",
+  "description": "웹페이지 콘텐츠를 쉽게 태그하고 저장할 수 있는 확장 프로그램",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -1,0 +1,142 @@
+/* LINESeedKR 폰트 */
+@font-face {
+  font-family: 'LINESeedKR';
+  font-weight: 700;
+  font-style: normal;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LINESeedKR';
+  font-weight: 400;
+  font-style: normal;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Rg.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LINESeedKR';
+  font-weight: 300;
+  font-style: normal;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Th.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* 노션 스타일 컬러 시스템 */
+:root {
+  /* 노션 스타일 색상 */
+  --notion-black: #191919;
+  --notion-white: #FFFFFF;
+  --notion-gray-50: #F8F9FA;
+  --notion-gray-100: #F1F3F5;
+  --notion-gray-200: #E9ECEF;
+  --notion-gray-300: #DEE2E6;
+  --notion-gray-400: #CED4DA;
+  --notion-gray-500: #ADB5BD;
+  --notion-gray-600: #868E96;
+  --notion-gray-700: #495057;
+  --notion-gray-800: #343A40;
+  --notion-gray-900: #212529;
+  
+  /* 액센트 컬러 */
+  --notion-blue: #0073F5;
+  --notion-green: #0CA678;
+  --notion-red: #FA5252;
+  
+  /* TaggingBox 브랜드 색상 */
+  --tb-accent-yellow: #F3ED7B;
+  --tb-accent-green: #0DC189;
+  --tb-accent-blue: #4185F4;
+  
+  /* 시스템 변수 */
+  --background: #FFFFFF;
+  --foreground: #191919;
+}
+
+/* 기본 스타일 정의 */
+@layer base {
+  body {
+    @apply font-sans text-notion-gray-900 bg-white;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-light text-notion-black leading-tight;
+  }
+  
+  h1 {
+    @apply text-4xl;
+  }
+  
+  h2 {
+    @apply text-3xl;
+  }
+  
+  h3 {
+    @apply text-2xl;
+  }
+  
+  h4 {
+    @apply text-xl;
+  }
+  
+  h5 {
+    @apply text-lg;
+  }
+  
+  a {
+    @apply text-notion-blue transition-colors;
+  }
+  
+  a:hover {
+    @apply text-opacity-80;
+  }
+}
+
+/* 공통 컴포넌트 스타일 */
+@layer components {
+  .card {
+    @apply bg-white border border-notion-gray-200 rounded-lg shadow-sm transition-all;
+  }
+  
+  .card:hover {
+    @apply border-notion-gray-300 shadow-md;
+  }
+  
+  .btn {
+    @apply px-4 py-2 rounded font-light transition-colors;
+  }
+  
+  .btn-primary {
+    @apply bg-notion-blue text-white hover:bg-opacity-90;
+  }
+  
+  .btn-outline {
+    @apply border border-notion-gray-200 hover:bg-notion-gray-50;
+  }
+  
+  .input {
+    @apply w-full p-2 border border-notion-gray-200 rounded focus:outline-none focus:border-notion-blue focus:ring-2 focus:ring-blue-100 transition-all;
+  }
+}
+
+/* 유틸리티 클래스 확장 */
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-notion-blue to-tb-accent-blue;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}

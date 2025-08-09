@@ -1,0 +1,164 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Box, Search, Tag as TagIcon, ArrowRight } from 'lucide-react';
+import TagCloud from '@/components/tag/TagCloud';
+import { searchApi, TagCloudItem } from '@/lib/searchApi';
+import TaggingBoxLogo from '@/components/brand/TaggingBoxLogo';
+import BrandButton from '@/components/brand/BrandButton';
+
+export default function HomePage() {
+  const router = useRouter();
+  const [popularTags, setPopularTags] = useState<TagCloudItem[]>([]);
+  const [recentBoxes, setRecentBoxes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 인기 태그 로드
+  useEffect(() => {
+    const loadPopularTags = async () => {
+      try {
+        const response = await searchApi.getTagCloud(15); // 상위 15개 태그만 가져오기
+        if (response.success) {
+          setPopularTags(response.data.tags);
+        }
+      } catch (error) {
+        console.error('태그 로딩 오류:', error);
+      }
+    };
+    
+    // 최근 박스 로드 (예시 데이터)
+    const mockRecentBoxes = [
+      { id: 'box1', name: '연구 프로젝트', contentCount: 15, updatedAt: new Date() },
+      { id: 'box2', name: '학습 자료', contentCount: 8, updatedAt: new Date(Date.now() - 3600000) },
+      { id: 'box3', name: '논문 모음', contentCount: 12, updatedAt: new Date(Date.now() - 86400000) },
+    ];
+    
+    const loadData = async () => {
+      setIsLoading(true);
+      await loadPopularTags();
+      setRecentBoxes(mockRecentBoxes); // 실제 API 연동 시 변경
+      setIsLoading(false);
+    };
+    
+    loadData();
+  }, []);
+  
+  // 태그 클릭 처리
+  const handleTagClick = (tagName: string) => {
+    router.push(`/search?tags=${encodeURIComponent(tagName)}`);
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <section className="mb-12">
+        <div className="mb-4">
+          <div className="w-36">
+            <TaggingBoxLogo type="normal" size="large" />
+          </div>
+        </div>
+        <p className="text-lg text-text-secondary mb-2">
+          당신의 지식을 체계적으로 관리하고 공유하는 플랫폼
+        </p>
+        <p className="text-base text-text-tertiary mb-8 bg-tb-yellow bg-opacity-10 inline-block px-3 py-1 rounded">
+          우리의 성장 계좌
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* 검색 바로가기 카드 */}
+          <div className="bg-white border border-notion-gray-200 rounded-md p-6 shadow-sm hover:shadow-md transition-all duration-normal">
+            <h2 className="text-xl font-light text-notion-black mb-3">태그로 콘텐츠 검색</h2>
+            <p className="mb-4 text-notion-gray-700">
+              원하는 콘텐츠를 태그 기반으로 빠르게 찾아보세요.
+            </p>
+            <BrandButton
+              href="/search"
+              variant="secondary"
+              icon={Search}
+            >
+              검색 페이지로 이동
+            </BrandButton>
+          </div>
+          
+          {/* 박스 관리 카드 */}
+          <div className="bg-white border border-notion-gray-200 rounded-md p-6 shadow-sm hover:shadow-md transition-all duration-normal">
+            <h2 className="text-xl font-light text-notion-black mb-3">박스로 콘텐츠 관리</h2>
+            <p className="mb-4 text-notion-gray-700">
+              콘텐츠를 박스로 체계적으로 분류하고 관리하세요.
+            </p>
+            <BrandButton
+              href="/boxes"
+              variant="highlight"
+              icon={Box}
+            >
+              박스 목록 보기
+            </BrandButton>
+          </div>
+        </div>
+      </section>
+      
+      {/* 인기 태그 섹션 */}
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-light text-notion-black">인기 태그</h2>
+          <Link 
+            href="/search" 
+            className="text-notion-blue hover:underline text-sm flex items-center transition-all duration-fast"
+          >
+            모든 태그 보기 <ArrowRight size={14} className="ml-1" />
+          </Link>
+        </div>
+        
+        {isLoading ? (
+          <div className="h-32 flex items-center justify-center bg-notion-gray-50 rounded-md">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-notion-blue"></div>
+          </div>
+        ) : (
+          <div className="bg-white p-6 rounded-md border border-notion-gray-200 shadow-sm">
+            {popularTags.length > 0 ? (
+              <TagCloud tags={popularTags} onTagClick={handleTagClick} />
+            ) : (
+              <p className="text-notion-gray-700 text-center py-4">아직 태그가 없습니다.</p>
+            )}
+          </div>
+        )}
+      </section>
+      
+      {/* 최근 박스 섹션 */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-light text-notion-black">최근 박스</h2>
+          <Link 
+            href="/boxes" 
+            className="text-notion-blue hover:underline text-sm flex items-center transition-all duration-fast"
+          >
+            모든 박스 보기 <ArrowRight size={14} className="ml-1" />
+          </Link>
+        </div>
+        
+        {isLoading ? (
+          <div className="h-32 flex items-center justify-center bg-notion-gray-50 rounded-md">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-notion-blue"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {recentBoxes.map(box => (
+              <Link 
+                key={box.id} 
+                href={`/boxes/${box.id}`}
+                className="bg-white p-5 rounded-md border border-notion-gray-200 shadow-sm hover:border-notion-gray-300 hover:shadow-md transition-all duration-normal"
+              >
+                <h3 className="text-lg font-normal text-notion-black mb-2">{box.name}</h3>
+                <div className="flex items-center text-sm text-notion-gray-700">
+                  <span className="mr-3">{box.contentCount} 콘텐츠</span>
+                  <span>{new Date(box.updatedAt).toLocaleDateString()}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}

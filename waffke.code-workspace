@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "tb-hub-clean"
+		},
+		{
+			"path": "waffle/developers_API-master_api"
+		},
+		{
+			"path": "waffle/developers-console-front-main"
+		},
+		{
+			"path": "waffle/developers-SDK-main"
+		}
+	],
+	"settings": {}
+}

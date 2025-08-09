@@ -1,0 +1,341 @@
+/* Tailwind 디렉티브 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* LINESeedKR 폰트 */
+@font-face {
+  font-family: 'LINESeedKR';
+  font-weight: 700;
+  font-style: normal;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LINESeedKR';
+  font-weight: 400;
+  font-style: normal;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Rg.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LINESeedKR';
+  font-weight: 300;
+  font-style: normal;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Th.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ========================================
+   taggingBox Brand Design System
+   ======================================== */
+
+/* TaggingBox 브랜드 유틸리티 클래스 */
+
+/* 텍스트 색상 강화 */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+
+/* 브랜드 강조 요소 (Claude 파스톤 스타일) */
+.highlight-yellow {
+  background: var(--brand-yellow);
+  color: var(--brand-black);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+/* 브랜드 링크 */
+.link-primary {
+  color: var(--brand-blue);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.link-primary:hover {
+  text-decoration: underline;
+}
+
+/* 태그 브랜드 스타일 */
+.tag-highlight {
+  background: var(--brand-yellow);
+  color: var(--brand-black);
+  border: 1px solid var(--brand-yellow);
+  font-weight: 500;
+}
+
+.tag-normal {
+  background: var(--notion-background);
+  color: var(--text-secondary);
+  border: 1px solid var(--notion-border);
+}
+
+:root {
+  /* Notion 기반 주요 색상 */
+  --notion-black: #37352f;  /* Notion 실제 메인 텍스트 색상 */
+  --notion-white: #FFFFFF;
+  --notion-gray-50: #F8F9FA;
+  --notion-gray-100: #F1F3F5;
+  --notion-gray-200: #E9ECEF;
+  --notion-gray-300: #DEE2E6;
+  --notion-gray-400: #CED4DA;
+  --notion-gray-500: #787774;  /* Notion 실제 부제목 색상 */
+  --notion-gray-600: #868E96;
+  --notion-gray-700: #37352f;  /* 본문 텍스트용 */
+  --notion-gray-800: #1f2937;  /* 제목 텍스트용 */
+  --notion-gray-900: #212529;
+  
+  /* Notion 액센트 컬러 */
+  --notion-blue: #0073F5;
+  --notion-green: #0CA678;
+  --notion-red: #FA5252;
+  
+  /* TaggingBox 브랜드 색상 */
+  --tb-yellow: #F5ED7B;      /* 강조, 하이라이트용 */
+  --tb-black: #0D0D0D;       /* 로고, 특별 강조용 */
+  --tb-blue: #4185F4;        /* 링크, 버튼 액션용 */
+  
+  /* 확장 가독성 텍스트 컬러 */
+  --text-primary: #1f2937;      /* 제목 (기존보다 진함) */
+  --text-secondary: #374151;    /* 본문 (기존보다 진함) */
+  --text-tertiary: #6b7280;     /* 힌트 (기존보다 진함) */
+}
+
+body {
+  font-family: LINESeedKR, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--notion-black);
+  background-color: white;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
+}
+
+/* 기본 스타일 재설정 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* 기본 디자인 시스템 변수 */
+  --background: #FFFFFF;
+  --foreground: #37352f;
+  
+  /* TaggingBox 통합 디자인 시스템 */
+  /* Notion 기반 주요 색상 */
+  --notion-text-primary: #37352f;
+  --notion-text-secondary: #787774;
+  --notion-text-tertiary: #9b9a97;
+  --notion-background: #ffffff;
+  --notion-border: #e9e9e7;
+  
+  /* TaggingBox 브랜드 액센트 */
+  --brand-yellow: #F5ED7B;      /* 강조, 하이라이트용 */
+  --brand-black: #0D0D0D;       /* 로고, 특별 강조용 */
+  --brand-blue: #4185F4;        /* 링크, 버튼 액션용 */
+  
+  /* 확장 가독성 텍스트 컬러 */
+  --text-primary: #1f2937;      /* 제목 (기존보다 진함) */
+  --text-secondary: #374151;    /* 본문 (기존보다 진함) */
+  --text-tertiary: #6b7280;     /* 힌트 (기존보다 진함) */
+  
+  /* 폰트 설정 */
+  --font-sans: 'LINESeedKR', sans-serif;
+  --font-weight-thin: 200;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  
+  /* 스페이싱 시스템 (8px 기반) */
+  --spacing-1: 0.25rem; /* 4px */
+  --spacing-2: 0.5rem;  /* 8px */
+  --spacing-3: 0.75rem; /* 12px */
+  --spacing-4: 1rem;    /* 16px */
+  --spacing-5: 1.25rem; /* 20px */
+  --spacing-6: 1.5rem;  /* 24px */
+  --spacing-8: 2rem;    /* 32px */
+  --spacing-10: 2.5rem; /* 40px */
+  --spacing-12: 3rem;   /* 48px */
+  
+  /* 경계 반경 - 미니멀하게 */
+  --radius-sm: 0.125rem; /* 2px */
+  --radius-md: 0.25rem;  /* 4px */
+  --radius-lg: 0.375rem; /* 6px */
+  --radius-xl: 0.5rem;   /* 8px */
+  
+  /* 그림자 - 미묘하고 부드럽게 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  
+  /* 애니메이션 - 부드러운 전환 */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 기본 스타일 재설정 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: var(--font-weight-light);
+  color: var(--notion-gray-900);
+  background-color: var(--notion-white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* 노션 스타일 타이포그래피 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'LINESeedKR', sans-serif;
+  font-weight: var(--font-weight-light);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--tb-text-primary);
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.25rem; /* 36px */
+}
+
+h2 {
+  font-size: 1.875rem; /* 30px */
+}
+
+h3 {
+  font-size: 1.5rem; /* 24px */
+}
+
+h4 {
+  font-size: 1.25rem; /* 20px */
+}
+
+h5 {
+  font-size: 1.125rem; /* 18px */
+}
+
+h6, p {
+  font-size: 1rem; /* 16px */
+}
+
+small {
+  font-size: 0.875rem; /* 14px */
+}
+
+/* 버튼 기본 스타일 */
+button, .btn {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-regular);
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-md);
+}
+
+/* 입력 필드 기본 스타일 */
+input, select, textarea {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-light);
+  color: var(--notion-gray-900);
+  background-color: var(--notion-white);
+  border: 1px solid var(--notion-gray-200);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2) var(--spacing-3);
+  transition: border-color var(--transition-fast);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--notion-blue);
+  box-shadow: 0 0 0 2px rgba(0, 115, 245, 0.1);
+}
+
+/* 카드 컴포넌트 기본 스타일 */
+.card {
+  background-color: var(--notion-white);
+  border: 1px solid var(--notion-gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+}
+
+.card:hover {
+  border-color: var(--notion-gray-300);
+  box-shadow: var(--shadow-md);
+}
+
+/* 애니메이션 및 트랜지션 */
+.fade-in {
+  animation: fadeIn var(--transition-normal);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 글로벌 스타일 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 선택 영역 스타일링 */
+::selection {
+  background: var(--tb-accent-yellow);
+  color: var(--tb-text-primary);
+}
+
+::-moz-selection {
+  background: var(--tb-accent-yellow);
+  color: var(--tb-text-primary);
+}
+
+/* 포커스 링 기본 스타일 */
+:focus-visible {
+  outline: 2px solid var(--tb-accent-blue);
+  outline-offset: 2px;
+}
+
+/* 애니메이션 감소 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+  :root {
+    --tb-gray-200: #000000;
+    --tb-gray-300: #000000;
+    --tb-border: 2px solid var(--tb-text-primary);
+  }
+  
+  .tb-card {
+    border: 2px solid var(--tb-text-primary);
+  }
+  
+  .tb-input {
+    border: 2px solid var(--tb-text-primary);
+  }
+}
