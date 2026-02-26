@@ -18,6 +18,10 @@
 - Goal: Rebuild dock UI for proposal preview and accept/reject actions.
 - Scope: `haw/ui`, `haw/main_assistant.py`, interaction wiring.
 - DoD: Clickable UI flow works end-to-end on Windows HWP.
+- Progress:
+  - Added dock controller-backed actions (`Propose/Show/Accept/Reject`).
+  - Added keyboard workflow (`Ctrl+Enter`, `F5`, `Ctrl+Y`, `Ctrl+N`, `Esc`).
+  - Added status line format and `Force apply` toggle.
 
 ## Done
 

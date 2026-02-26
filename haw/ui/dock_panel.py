@@ -150,6 +150,13 @@ def _create_controller() -> DockController:
     return DockController(client=client, store=store, policy=policy)
 
 
+def _build_status_text(action: str, ok: bool, detail: str = "") -> str:
+    label = "OK" if ok else "ERR"
+    if detail:
+        return f"[{label}] {action}: {detail}"
+    return f"[{label}] {action}"
+
+
 def run_dock(options: DockOptions) -> int:
     try:
         import tkinter as tk
@@ -168,66 +175,95 @@ def run_dock(options: DockOptions) -> int:
 
     root = tk.Tk()
     root.title("HAW Assistant")
-    root.geometry("720x560")
+    root.geometry("880x640")
+    root.minsize(760, 520)
 
     main = ttk.Frame(root, padding=12)
     main.pack(fill="both", expand=True)
+    main.columnconfigure(0, weight=1)
+    main.rowconfigure(4, weight=1)
 
     title = ttk.Label(main, text="HAW Rewrite Assistant")
-    title.pack(anchor="w")
+    title.grid(row=0, column=0, sticky="w")
+
+    shortcut_hint = ttk.Label(
+        main,
+        text="Ctrl+Enter Propose | F5 Show | Ctrl+Y Accept | Ctrl+N Reject | Esc Exit",
+    )
+    shortcut_hint.grid(row=1, column=0, sticky="w", pady=(2, 10))
 
     prompt_label = ttk.Label(main, text="Prompt")
-    prompt_label.pack(anchor="w", pady=(10, 2))
+    prompt_label.grid(row=2, column=0, sticky="w")
 
-    prompt_var = tk.StringVar()
-    prompt_entry = ttk.Entry(main, textvariable=prompt_var)
-    prompt_entry.pack(fill="x")
+    prompt = tk.Text(main, wrap="word", height=4)
+    prompt.grid(row=3, column=0, sticky="nsew", pady=(2, 10))
 
-    actions = ttk.Frame(main)
-    actions.pack(fill="x", pady=10)
+    body = ttk.Panedwindow(main, orient="vertical")
+    body.grid(row=4, column=0, sticky="nsew")
 
-    output = tk.Text(main, wrap="word", height=20)
-    output.pack(fill="both", expand=True)
+    actions = ttk.Frame(body, padding=6)
+    body.add(actions, weight=0)
 
-    status_var = tk.StringVar(value="Ready")
-    status_label = ttk.Label(main, textvariable=status_var)
-    status_label.pack(anchor="w", pady=(8, 0))
+    output = tk.Text(body, wrap="word", height=20)
+    body.add(output, weight=1)
+
+    status_frame = ttk.Frame(main)
+    status_frame.grid(row=5, column=0, sticky="ew", pady=(10, 0))
+
+    status_var = tk.StringVar(value="[OK] ready")
+    status_label = ttk.Label(status_frame, textvariable=status_var)
+    status_label.pack(side="left")
+
+    force_var = tk.BooleanVar(value=False)
+    force_check = ttk.Checkbutton(status_frame, text="Force apply", variable=force_var)
+    force_check.pack(side="right")
 
     if options.debug:
-        status_var.set("Ready (debug)")
+        status_var.set("[OK] ready (debug)")
 
     def set_output(text: str) -> None:
         output.delete("1.0", "end")
         output.insert("1.0", text)
 
+    def get_prompt_text() -> str:
+        return prompt.get("1.0", "end").strip()
+
     def on_propose() -> None:
-        prompt = prompt_var.get().strip()
-        if not prompt:
-            status_var.set("Prompt is required")
+        prompt_text = get_prompt_text()
+        if not prompt_text:
+            status_var.set(_build_status_text("propose", False, "prompt is required"))
             return
-        ok, message = controller.propose(prompt=prompt)
+        ok, message = controller.propose(prompt=prompt_text)
         set_output(message)
-        status_var.set("Proposal created" if ok else f"Error: {message}")
+        status_var.set(_build_status_text("propose", ok, "proposal created" if ok else message))
 
     def on_show() -> None:
         ok, message = controller.show()
         set_output(message)
-        status_var.set("Proposal loaded" if ok else f"Error: {message}")
+        status_var.set(_build_status_text("show", ok, "proposal loaded" if ok else message))
 
     def on_accept() -> None:
-        ok, message = controller.accept(force=False)
+        ok, message = controller.accept(force=bool(force_var.get()))
         set_output(message)
-        status_var.set("Applied" if ok else f"Error: {message}")
+        status_var.set(_build_status_text("accept", ok, "applied" if ok else message))
 
     def on_reject() -> None:
         ok, message = controller.reject()
         set_output(message)
-        status_var.set("Rejected" if ok else f"Error: {message}")
+        status_var.set(_build_status_text("reject", ok, "cleared" if ok else message))
 
     ttk.Button(actions, text="Propose", command=on_propose).pack(side="left", padx=(0, 8))
     ttk.Button(actions, text="Show", command=on_show).pack(side="left", padx=(0, 8))
     ttk.Button(actions, text="Accept", command=on_accept).pack(side="left", padx=(0, 8))
     ttk.Button(actions, text="Reject", command=on_reject).pack(side="left")
 
+    # Keyboard-first workflow for editor users.
+    root.bind("<Control-Return>", lambda _e: on_propose())
+    root.bind("<F5>", lambda _e: on_show())
+    root.bind("<Control-y>", lambda _e: on_accept())
+    root.bind("<Control-n>", lambda _e: on_reject())
+    root.bind("<Escape>", lambda _e: root.destroy())
+
+    prompt.focus_set()
     root.mainloop()
     return 0

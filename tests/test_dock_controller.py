@@ -2,7 +2,7 @@ from pathlib import Path
 
 from haw.agent.proposal_store import ProposalStore
 from haw.policy import Policy
-from haw.ui.dock_panel import DockController
+from haw.ui.dock_panel import DockController, _build_status_text
 
 
 class _Result:
@@ -54,3 +54,8 @@ def test_dock_controller_accept_clears_store(tmp_path: Path) -> None:
     assert "applied" in msg
     assert store.load() is None
     assert client.replaced is not None
+
+
+def test_build_status_text() -> None:
+    assert _build_status_text("propose", True, "created") == "[OK] propose: created"
+    assert _build_status_text("accept", False, "failed") == "[ERR] accept: failed"

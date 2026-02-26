@@ -28,6 +28,15 @@ Windows-first assistant for guarded rewrite workflows in HWP.
 .\.venv\Scripts\python -m haw.main hwp reject-proposal
 ```
 
+## Dock UX
+
+- `Ctrl+Enter`: propose from selected HWP text
+- `F5`: show current pending proposal
+- `Ctrl+Y`: accept proposal
+- `Ctrl+N`: reject proposal
+- `Esc`: close dock window
+- `Force apply` checkbox: allow apply even if selection changed
+
 ## Repository Layout
 
 - `haw/`: application code
