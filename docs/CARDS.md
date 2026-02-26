@@ -2,19 +2,21 @@
 
 ## Backlog
 
-### CARD-003 HWP COM Reliability Hardening
-- Goal: Reduce clipboard dependency and improve COM fallback behavior.
-- Scope: `haw/services/hwp_client.py`, error handling, retry strategy.
-- DoD: Stable behavior across repeated runs and common HWP states.
-- Progress:
-  - Fixed `win32com.client` import path and dispatch fallback regression.
-
 ### CARD-004 Release Readiness
 - Goal: Team handoff quality for build/test/run pipeline.
 - Scope: scripts, docs, smoke flow, packaging checks.
 - DoD: New engineer can run setup and smoke test without questions.
 
 ## In Progress
+
+### CARD-003 HWP COM Reliability Hardening
+- Goal: Reduce clipboard dependency and improve COM fallback behavior.
+- Scope: `haw/services/hwp_client.py`, error handling, retry strategy.
+- DoD: Stable behavior across repeated runs and common HWP states.
+- Progress:
+  - Fixed `win32com.client` import path and dispatch fallback regression.
+  - Added clipboard backup/restore for read and paste operations.
+  - Added regression tests for backup/restore behavior.
 
 ## Done
 

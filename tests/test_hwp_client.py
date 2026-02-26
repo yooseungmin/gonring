@@ -43,3 +43,28 @@ def test_connect_falls_back_to_dispatch(monkeypatch) -> None:
     monkeypatch.setattr(hc, "_import_win32com", lambda: FakeComClient)
     client = hc.HwpClient.connect(visible=False)
     assert isinstance(client.hwp, FakeHwp)
+
+
+def test_clipboard_paste_restores_previous_content(monkeypatch) -> None:
+    hwp = FakeHwp()
+    writes: list[str] = []
+
+    monkeypatch.setattr(hc, "_read_unicode_clipboard", lambda: "backup")
+    monkeypatch.setattr(hc, "_write_unicode_clipboard", lambda text: writes.append(text) or True)
+
+    ok = hc._clipboard_paste_text(hwp, "new text")
+    assert ok
+    assert writes == ["new text", "backup"]
+
+
+def test_clipboard_read_restores_previous_content(monkeypatch) -> None:
+    hwp = FakeHwp()
+    reads = iter(["backup", "selected"])
+    writes: list[str] = []
+
+    monkeypatch.setattr(hc, "_read_unicode_clipboard", lambda: next(reads, None))
+    monkeypatch.setattr(hc, "_write_unicode_clipboard", lambda text: writes.append(text) or True)
+
+    text = hc._clipboard_read_selection_text(hwp)
+    assert text == "selected"
+    assert writes == ["backup"]

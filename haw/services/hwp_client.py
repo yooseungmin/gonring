@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Callable
 from typing import Any
 
 
@@ -99,6 +100,37 @@ def _import_win32com() -> Any:
 
 
 def _clipboard_read_selection_text(hwp: Any) -> str | None:
+    def _operation() -> str | None:
+        try:
+            hwp.Run("Copy")
+        except Exception:
+            return None
+        return _read_unicode_clipboard()
+
+    return _with_clipboard_backup(_operation)
+
+
+def _clipboard_paste_text(hwp: Any, text: str) -> bool:
+    def _operation() -> bool:
+        if not _write_unicode_clipboard(text):
+            return False
+        try:
+            return bool(hwp.Run("Paste"))
+        except Exception:
+            return False
+
+    return bool(_with_clipboard_backup(_operation))
+
+
+def _with_clipboard_backup(operation: Callable[[], Any]) -> Any:
+    backup = _read_unicode_clipboard()
+    result = operation()
+    if backup is not None:
+        _write_unicode_clipboard(backup)
+    return result
+
+
+def _read_unicode_clipboard() -> str | None:
     try:
         import win32clipboard  # type: ignore
         import win32con  # type: ignore
@@ -106,26 +138,20 @@ def _clipboard_read_selection_text(hwp: Any) -> str | None:
         return None
 
     try:
-        hwp.Run("Copy")
+        win32clipboard.OpenClipboard()
+        if not win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
+            return None
+        return str(win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT))
     except Exception:
         return None
-
-    text: str | None = None
-    try:
-        win32clipboard.OpenClipboard()
-        if win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
-            text = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
-    except Exception:
-        text = None
     finally:
         try:
             win32clipboard.CloseClipboard()
         except Exception:
             pass
-    return text
 
 
-def _clipboard_paste_text(hwp: Any, text: str) -> bool:
+def _write_unicode_clipboard(text: str) -> bool:
     try:
         import win32clipboard  # type: ignore
         import win32con  # type: ignore
@@ -136,6 +162,7 @@ def _clipboard_paste_text(hwp: Any, text: str) -> bool:
         win32clipboard.OpenClipboard()
         win32clipboard.EmptyClipboard()
         win32clipboard.SetClipboardData(win32con.CF_UNICODETEXT, text)
+        return True
     except Exception:
         return False
     finally:
@@ -143,11 +170,6 @@ def _clipboard_paste_text(hwp: Any, text: str) -> bool:
             win32clipboard.CloseClipboard()
         except Exception:
             pass
-
-    try:
-        return bool(hwp.Run("Paste"))
-    except Exception:
-        return False
 
 
 def probe_hwp() -> HwpState:
