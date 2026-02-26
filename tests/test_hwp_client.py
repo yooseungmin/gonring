@@ -68,3 +68,25 @@ def test_clipboard_read_restores_previous_content(monkeypatch) -> None:
     text = hc._clipboard_read_selection_text(hwp)
     assert text == "selected"
     assert writes == ["backup"]
+
+
+def test_retry_succeeds_after_transient_failures() -> None:
+    state = {"count": 0}
+
+    def flaky() -> str:
+        state["count"] += 1
+        if state["count"] < 3:
+            raise RuntimeError("busy")
+        return "ok"
+
+    result = hc._retry(flaky, attempts=3, delay_sec=0)
+    assert result == "ok"
+
+
+def test_read_selection_returns_error_code_on_empty(monkeypatch) -> None:
+    hwp = FakeHwp()
+    client = hc.HwpClient(hwp)
+    monkeypatch.setattr(hc, "_clipboard_read_selection_text", lambda _hwp: "   ")
+    result = client.read_selection_text()
+    assert not result.ok
+    assert result.detail.startswith("E_EMPTY_SELECTION")

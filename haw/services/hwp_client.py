@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
 from typing import Any
+from typing import Callable
+import time
+
+COMMAND_RETRY_ATTEMPTS = 3
+COMMAND_RETRY_DELAY_SEC = 0.03
+CLIPBOARD_RETRY_ATTEMPTS = 5
+CLIPBOARD_RETRY_DELAY_SEC = 0.03
 
 
 @dataclass(frozen=True)
@@ -47,10 +53,15 @@ class HwpClient:
             pass
 
     def _run_command(self, command_name: str) -> bool:
-        try:
-            return bool(self.hwp.Run(command_name))
-        except Exception:
-            return False
+        for attempt in range(COMMAND_RETRY_ATTEMPTS):
+            try:
+                if bool(self.hwp.Run(command_name)):
+                    return True
+            except Exception:
+                pass
+            if attempt < COMMAND_RETRY_ATTEMPTS - 1:
+                time.sleep(COMMAND_RETRY_DELAY_SEC)
+        return False
 
     def ensure_track_changes_enabled(self, force: bool = True) -> HwpOperationResult:
         if not force:
@@ -72,13 +83,15 @@ class HwpClient:
 
         return HwpOperationResult(
             ok=False,
-            detail="unable to enable track changes (no compatible attribute/command found)",
+            detail="E_TRACK_CHANGE_UNAVAILABLE: unable to enable track changes",
         )
 
     def read_selection_text(self) -> HwpOperationResult:
         text = _clipboard_read_selection_text(self.hwp)
         if text is None:
-            return HwpOperationResult(ok=False, detail="failed to read selection from clipboard")
+            return HwpOperationResult(ok=False, detail="E_CLIPBOARD_READ: failed to read selection")
+        if not text.strip():
+            return HwpOperationResult(ok=False, detail="E_EMPTY_SELECTION: no selected text found")
         return HwpOperationResult(ok=True, detail=text)
 
     def replace_selection_text(self, text: str) -> HwpOperationResult:
@@ -87,7 +100,7 @@ class HwpClient:
         ok = _clipboard_paste_text(self.hwp, text)
         if ok:
             return HwpOperationResult(ok=True, detail="selection replaced")
-        return HwpOperationResult(ok=False, detail="failed to paste text into document")
+        return HwpOperationResult(ok=False, detail="E_CLIPBOARD_PASTE: failed to paste text")
 
 
 def _import_win32com() -> Any:
@@ -130,6 +143,20 @@ def _with_clipboard_backup(operation: Callable[[], Any]) -> Any:
     return result
 
 
+def _retry(operation: Callable[[], Any], *, attempts: int, delay_sec: float) -> Any:
+    last_error: Exception | None = None
+    for attempt in range(attempts):
+        try:
+            return operation()
+        except Exception as exc:
+            last_error = exc
+            if attempt < attempts - 1:
+                time.sleep(delay_sec)
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("retry failed without exception")
+
+
 def _read_unicode_clipboard() -> str | None:
     try:
         import win32clipboard  # type: ignore
@@ -137,18 +164,26 @@ def _read_unicode_clipboard() -> str | None:
     except Exception:
         return None
 
-    try:
+    def _read() -> str | None:
         win32clipboard.OpenClipboard()
-        if not win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
-            return None
-        return str(win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT))
+        try:
+            if not win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
+                return None
+            return str(win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT))
+        finally:
+            try:
+                win32clipboard.CloseClipboard()
+            except Exception:
+                pass
+
+    try:
+        return _retry(
+            _read,
+            attempts=CLIPBOARD_RETRY_ATTEMPTS,
+            delay_sec=CLIPBOARD_RETRY_DELAY_SEC,
+        )
     except Exception:
         return None
-    finally:
-        try:
-            win32clipboard.CloseClipboard()
-        except Exception:
-            pass
 
 
 def _write_unicode_clipboard(text: str) -> bool:
@@ -158,18 +193,28 @@ def _write_unicode_clipboard(text: str) -> bool:
     except Exception:
         return False
 
-    try:
+    def _write() -> bool:
         win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardData(win32con.CF_UNICODETEXT, text)
-        return True
+        try:
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardData(win32con.CF_UNICODETEXT, text)
+            return True
+        finally:
+            try:
+                win32clipboard.CloseClipboard()
+            except Exception:
+                pass
+
+    try:
+        return bool(
+            _retry(
+                _write,
+                attempts=CLIPBOARD_RETRY_ATTEMPTS,
+                delay_sec=CLIPBOARD_RETRY_DELAY_SEC,
+            )
+        )
     except Exception:
         return False
-    finally:
-        try:
-            win32clipboard.CloseClipboard()
-        except Exception:
-            pass
 
 
 def probe_hwp() -> HwpState:

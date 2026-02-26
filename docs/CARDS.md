@@ -9,15 +9,6 @@
 
 ## In Progress
 
-### CARD-003 HWP COM Reliability Hardening
-- Goal: Reduce clipboard dependency and improve COM fallback behavior.
-- Scope: `haw/services/hwp_client.py`, error handling, retry strategy.
-- DoD: Stable behavior across repeated runs and common HWP states.
-- Progress:
-  - Fixed `win32com.client` import path and dispatch fallback regression.
-  - Added clipboard backup/restore for read and paste operations.
-  - Added regression tests for backup/restore behavior.
-
 ## Done
 
 ### CARD-000 Proposal Workflow Baseline
@@ -34,3 +25,10 @@
   - `hwp status` passed (`HWP COM is available`)
   - dock process smoke start passed (`dock_started=true`)
 - References: `8f84b84`
+
+### CARD-003 HWP COM Reliability Hardening
+- Result: Hardened COM and clipboard operations with retry/fallback and error-code diagnostics.
+- Verification:
+  - `hwp status` passed (`HWP COM is available`)
+  - Regression tests for retry and clipboard restore passed
+- References: `72e267a`, current branch
