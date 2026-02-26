@@ -1,6 +1,6 @@
 ﻿# HAW Assistant
 
-Windows-first assistant for rewriting selected text in HWP with policy guardrails and diff preview.
+Windows-first assistant for guarded rewrite workflows in HWP.
 
 ## Quick Start
 
@@ -12,16 +12,19 @@ Windows-first assistant for rewriting selected text in HWP with policy guardrail
 
 ```powershell
 .\scripts\smoke_test.ps1
-.\\.venv\Scripts\python -m haw.main doctor --strict
-.\\.venv\Scripts\python -m haw.main hwp status
+.\.venv\Scripts\python -m haw.main doctor --strict
+.\.venv\Scripts\python -m haw.main hwp status
 ```
 
-## CLI
+## Core Commands
 
 ```powershell
-.\\.venv\Scripts\python -m haw.main --help
-.\\.venv\Scripts\python -m haw.main hwp read-selection
-.\\.venv\Scripts\python -m haw.main hwp rewrite-selection -p "臾몄옣???꾨Ц?곸씠怨?媛꾧껐?섍쾶 ?ㅻ벉?댁쨾"
+.\.venv\Scripts\python -m haw.main --help
+.\.venv\Scripts\python -m haw.main hwp read-selection
+.\.venv\Scripts\python -m haw.main hwp propose-selection -p "Refine this paragraph"
+.\.venv\Scripts\python -m haw.main hwp show-proposal
+.\.venv\Scripts\python -m haw.main hwp accept-proposal
+.\.venv\Scripts\python -m haw.main hwp reject-proposal
 ```
 
 ## Repository Layout
@@ -29,6 +32,7 @@ Windows-first assistant for rewriting selected text in HWP with policy guardrail
 - `haw/`: application code
 - `tests/`: unit tests
 - `docs/`: handoff and architecture docs
+- `scripts/`: local bootstrap and smoke test scripts
 - `policy.toml`: runtime guardrail policy
 - `.env.example`: environment template
 

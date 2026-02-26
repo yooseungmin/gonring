@@ -6,6 +6,7 @@ import click
 
 from haw.config import load_settings
 from haw.agent.actions import write_action
+from haw.agent.proposal_store import ProposalStore, RewriteProposal, can_accept_proposal
 from haw.core.doctor import run_doctor_json
 from haw.core.logger import configure_logger
 from haw.policy import load_policy
@@ -120,6 +121,87 @@ def hwp_rewrite_selection(prompt: str) -> None:
     if not replace_result.ok:
         raise click.ClickException(replace_result.detail)
     click.echo("selection rewritten")
+
+
+@hwp.command("propose-selection")
+@click.option("-p", "--prompt", required=True, help="Instruction prompt for rewrite proposal.")
+def hwp_propose_selection(prompt: str) -> None:
+    policy = load_policy()
+    client = HwpClient.connect(visible=True)
+
+    selection_result = client.read_selection_text()
+    if not selection_result.ok:
+        raise click.ClickException(selection_result.detail)
+
+    result = write_action(prompt=prompt, selected_text=selection_result.detail, policy=policy)
+    if not result.get("ok"):
+        raise click.ClickException(str(result.get("message", "rewrite blocked")))
+
+    proposal = RewriteProposal.create(
+        prompt=prompt,
+        original_text=selection_result.detail,
+        rewritten_text=str(result["rewritten_text"]),
+    )
+    ProposalStore().save(proposal)
+
+    panel = DockPanelRenderer()
+    panel.update_from_action_result(result)
+    click.echo("proposal saved: .haw/pending_proposal.json")
+    click.echo(panel.dump())
+
+
+@hwp.command("show-proposal")
+def hwp_show_proposal() -> None:
+    proposal = ProposalStore().load()
+    if proposal is None:
+        raise click.ClickException("no pending proposal")
+
+    panel = DockPanelRenderer()
+    panel.append_diff_preview(original=proposal.original_text, rewritten=proposal.rewritten_text)
+    click.echo(f"created_at: {proposal.created_at}")
+    click.echo(f"prompt: {proposal.prompt}")
+    click.echo(panel.dump())
+
+
+@hwp.command("accept-proposal")
+@click.option("--force", is_flag=True, help="Apply proposal even if selection text changed.")
+def hwp_accept_proposal(force: bool) -> None:
+    policy = load_policy()
+    proposal = ProposalStore().load()
+    if proposal is None:
+        raise click.ClickException("no pending proposal")
+
+    client = HwpClient.connect(visible=True)
+    track_result = client.ensure_track_changes_enabled(force=policy.hwp.force_track_changes)
+    if policy.hwp.force_track_changes and not track_result.ok:
+        raise click.ClickException(track_result.detail)
+
+    selection_result = client.read_selection_text()
+    if not selection_result.ok:
+        raise click.ClickException(selection_result.detail)
+
+    can_apply, reason = can_accept_proposal(
+        current_selection=selection_result.detail,
+        proposal=proposal,
+        force=force,
+    )
+    if not can_apply:
+        raise click.ClickException(reason)
+
+    replace_result = client.replace_selection_text(proposal.rewritten_text)
+    if not replace_result.ok:
+        raise click.ClickException(replace_result.detail)
+
+    ProposalStore().clear()
+    click.echo("proposal accepted and applied")
+
+
+@hwp.command("reject-proposal")
+def hwp_reject_proposal() -> None:
+    deleted = ProposalStore().clear()
+    if not deleted:
+        raise click.ClickException("no pending proposal")
+    click.echo("proposal rejected and cleared")
 
 
 if __name__ == "__main__":

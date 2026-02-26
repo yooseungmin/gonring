@@ -43,6 +43,9 @@ class DockPanelRenderer:
         self.append(" ".join(rendered_parts).strip())
         self.append(f"[OK] {count_changed_words(tokens)} words changed")
 
+    def append_diff_preview(self, original: str, rewritten: str) -> None:
+        self._append_diff_block(original=original, rewritten=rewritten)
+
     def update_from_action_result(self, result: dict) -> None:
         rewritten = str(result.get("rewritten_text", "")).strip()
         message = str(result.get("message", "")).strip()

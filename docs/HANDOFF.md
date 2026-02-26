@@ -15,6 +15,8 @@ Copy-Item .env.example .env -Force
 .\.venv\Scripts\python -m pytest -q
 .\.venv\Scripts\python -m haw.main doctor --strict
 .\.venv\Scripts\python -m haw.main hwp status
+.\.venv\Scripts\python -m haw.main hwp propose-selection -p "Refine this paragraph"
+.\.venv\Scripts\python -m haw.main hwp show-proposal
 ```
 
 ## Known Constraints
@@ -22,6 +24,7 @@ Copy-Item .env.example .env -Force
 - Rewrite logic is currently deterministic placeholder logic.
 - HWP operations rely on clipboard round-trip and can conflict with external clipboard usage.
 - COM behavior can vary by HWP version and workstation policy.
+- Proposal workflow stores one pending item at `.haw/pending_proposal.json`.
 
 ## Recommended Immediate Follow-ups
 
