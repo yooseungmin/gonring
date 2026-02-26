@@ -1,0 +1,7 @@
+click>=8.1.7
+python-dotenv>=1.0.1
+loguru>=0.7.2
+pywin32>=308; platform_system == "Windows"
+keyboard>=0.13.5; platform_system == "Windows"
+pystray>=0.19.5; platform_system == "Windows"
+Pillow>=11.0.0

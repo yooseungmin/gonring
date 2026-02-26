@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "haw-assistant"
+version = "0.1.0"
+description = "HAW assistant for guarded rewrite workflows and HWP automation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "click>=8.1.7",
+  "python-dotenv>=1.0.1",
+  "loguru>=0.7.2",
+  "pywin32>=308; platform_system == 'Windows'",
+  "keyboard>=0.13.5; platform_system == 'Windows'",
+  "pystray>=0.19.5; platform_system == 'Windows'",
+  "Pillow>=11.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+]
+
+[project.scripts]
+haw = "haw.main:cli"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["haw*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--basetemp=.pytest_temp"

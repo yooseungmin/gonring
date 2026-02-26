@@ -1,12 +1,12 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 import re
 
 STYLE_KEYWORDS = (
     "font",
-    "폰트",
     "글꼴",
+    "글자",
     "서체",
     "bold",
     "italic",
@@ -14,8 +14,8 @@ STYLE_KEYWORDS = (
     "기울임",
     "색상",
     "정렬",
-    "열너비",
-    "행높이",
+    "줄간격",
+    "행간",
     "머리말",
     "꼬리말",
     "이미지",

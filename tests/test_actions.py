@@ -18,3 +18,9 @@ def test_plain_text_allowed() -> None:
     assert not contains_style_request("Refine this sentence")
     decision = decide_action("Refine this sentence", "plain text")
     assert decision.allowed
+
+
+def test_korean_style_request_blocked() -> None:
+    decision = decide_action("글꼴을 굵게 바꿔줘", "본문")
+    assert not decision.allowed
+    assert decision.reason == "style_request_blocked"
