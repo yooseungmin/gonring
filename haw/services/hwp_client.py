@@ -28,11 +28,11 @@ class HwpClient:
 
     @classmethod
     def connect(cls, visible: bool = True) -> "HwpClient":
-        win32com = _import_win32com()
+        win32com_client = _import_win32com()
         try:
-            hwp = win32com.gencache.EnsureDispatch("HWPFrame.HwpObject")
+            hwp = win32com_client.gencache.EnsureDispatch("HWPFrame.HwpObject")
         except Exception:
-            hwp = win32com.client.Dispatch("HWPFrame.HwpObject")
+            hwp = win32com_client.Dispatch("HWPFrame.HwpObject")
         client = cls(hwp)
         client._set_visible(visible)
         return client
@@ -91,9 +91,9 @@ class HwpClient:
 
 def _import_win32com() -> Any:
     try:
-        import win32com  # type: ignore
+        import win32com.client  # type: ignore
 
-        return win32com
+        return win32com.client
     except Exception as exc:
         raise RuntimeError(f"win32com is unavailable: {exc}") from exc
 

@@ -27,3 +27,19 @@ def test_replace_selection_uses_delete_then_paste(monkeypatch) -> None:
     result = client.replace_selection_text("replacement")
     assert result.ok
     assert "Delete" in hwp.commands
+
+
+def test_connect_falls_back_to_dispatch(monkeypatch) -> None:
+    class FakeComClient:
+        class gencache:
+            @staticmethod
+            def EnsureDispatch(_prog_id: str):  # noqa: N802
+                raise RuntimeError("ensure dispatch failed")
+
+        @staticmethod
+        def Dispatch(_prog_id: str):  # noqa: N802
+            return FakeHwp()
+
+    monkeypatch.setattr(hc, "_import_win32com", lambda: FakeComClient)
+    client = hc.HwpClient.connect(visible=False)
+    assert isinstance(client.hwp, FakeHwp)
