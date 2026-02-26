@@ -20,6 +20,7 @@ Windows-first assistant for guarded rewrite workflows in HWP.
 
 ```powershell
 .\.venv\Scripts\python -m haw.main --help
+.\.venv\Scripts\python -m haw.main agent start --dock
 .\.venv\Scripts\python -m haw.main hwp read-selection
 .\.venv\Scripts\python -m haw.main hwp propose-selection -p "Refine this paragraph"
 .\.venv\Scripts\python -m haw.main hwp show-proposal
