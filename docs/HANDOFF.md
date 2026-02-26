@@ -1,4 +1,4 @@
-# Handoff Checklist
+﻿# Handoff Checklist
 
 ## Local Setup
 

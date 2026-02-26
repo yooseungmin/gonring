@@ -1,4 +1,4 @@
-# HAW Assistant
+﻿# HAW Assistant
 
 Windows-first assistant for rewriting selected text in HWP with policy guardrails and diff preview.
 
@@ -12,16 +12,16 @@ Windows-first assistant for rewriting selected text in HWP with policy guardrail
 
 ```powershell
 .\scripts\smoke_test.ps1
-.\.venv_local\Scripts\python -m haw.main doctor --strict
-.\.venv_local\Scripts\python -m haw.main hwp status
+.\\.venv\Scripts\python -m haw.main doctor --strict
+.\\.venv\Scripts\python -m haw.main hwp status
 ```
 
 ## CLI
 
 ```powershell
-.\.venv_local\Scripts\python -m haw.main --help
-.\.venv_local\Scripts\python -m haw.main hwp read-selection
-.\.venv_local\Scripts\python -m haw.main hwp rewrite-selection -p "문장을 전문적이고 간결하게 다듬어줘"
+.\\.venv\Scripts\python -m haw.main --help
+.\\.venv\Scripts\python -m haw.main hwp read-selection
+.\\.venv\Scripts\python -m haw.main hwp rewrite-selection -p "臾몄옣???꾨Ц?곸씠怨?媛꾧껐?섍쾶 ?ㅻ벉?댁쨾"
 ```
 
 ## Repository Layout
