@@ -1,3 +1,6 @@
+import sys
+import types
+
 from haw.services import hwp_client as hc
 
 
@@ -8,7 +11,14 @@ class FakeHwp:
 
     def Run(self, command_name: str) -> bool:  # noqa: N802 (COM-like name)
         self.commands.append(command_name)
-        return command_name in {"Copy", "Paste", "TrackChange", "Delete"}
+        return command_name in {
+            "Copy",
+            "Paste",
+            "TrackChange",
+            "Delete",
+            "RevisionRejectSelection",
+            "Undo",
+        }
 
 
 def test_track_changes_enable_via_attribute() -> None:
@@ -83,6 +93,24 @@ def test_retry_succeeds_after_transient_failures() -> None:
     assert result == "ok"
 
 
+def test_write_unicode_clipboard_writes_text(monkeypatch) -> None:
+    events: list[object] = []
+
+    fake_clipboard = types.SimpleNamespace(
+        OpenClipboard=lambda: events.append("open"),
+        EmptyClipboard=lambda: events.append("empty"),
+        SetClipboardData=lambda fmt, text: events.append(("set", fmt, text)),
+        CloseClipboard=lambda: events.append("close"),
+    )
+    fake_con = types.SimpleNamespace(CF_UNICODETEXT=13)
+
+    monkeypatch.setitem(sys.modules, "win32clipboard", fake_clipboard)
+    monkeypatch.setitem(sys.modules, "win32con", fake_con)
+
+    assert hc._write_unicode_clipboard("hello") is True
+    assert events == ["open", "empty", ("set", 13, "hello"), "close"]
+
+
 def test_read_selection_returns_error_code_on_empty(monkeypatch) -> None:
     hwp = FakeHwp()
     client = hc.HwpClient(hwp)
@@ -90,3 +118,70 @@ def test_read_selection_returns_error_code_on_empty(monkeypatch) -> None:
     result = client.read_selection_text()
     assert not result.ok
     assert result.detail.startswith("E_EMPTY_SELECTION")
+
+
+def test_read_context_reports_caret_anchor_when_no_selection(monkeypatch) -> None:
+    hwp = FakeHwp()
+    client = hc.HwpClient(hwp)
+    stages: list[str] = []
+
+    monkeypatch.setattr(hc, "_clipboard_read_selection_text", lambda _hwp: "   ")
+    monkeypatch.setattr(client, "_run_command", lambda _name: False)
+
+    result = client.read_context(scan_pages_each_side=0, on_stage=stages.append)
+
+    assert result.ok
+    assert result.target_mode == "caret_anchor"
+    assert result.anchor_restored is True
+    assert stages == ["Caret detected, resolving nearby context"]
+
+
+def test_read_context_resolves_caret_to_current_block(monkeypatch) -> None:
+    hwp = FakeHwp()
+    client = hc.HwpClient(hwp)
+    stages: list[str] = []
+    reads = iter(["   ", "resolved paragraph"])
+
+    monkeypatch.setattr(hc, "_clipboard_read_selection_text", lambda _hwp: next(reads, "resolved paragraph"))
+    monkeypatch.setattr(
+        client,
+        "_run_command",
+        lambda name: name in {"MoveParaBegin", "MoveSelParaEnd"},
+    )
+
+    result = client.read_context(scan_pages_each_side=0, on_stage=stages.append)
+
+    assert result.ok
+    assert result.target_mode == "caret_resolved_block"
+    assert result.selection == "resolved paragraph"
+    assert result.scan_mode == "caret_resolved_block"
+    assert stages == [
+        "Caret detected, resolving nearby context",
+        "Caret block resolved",
+    ]
+
+
+def test_discard_last_review_edit_prefers_reject_selected_revisions() -> None:
+    hwp = FakeHwp()
+    client = hc.HwpClient(hwp)
+
+    result = client.discard_last_review_edit()
+
+    assert result.ok
+    assert hwp.commands[0] == "RevisionRejectSelection"
+
+
+def test_discard_last_review_edit_falls_back_to_undo(monkeypatch) -> None:
+    hwp = FakeHwp()
+    client = hc.HwpClient(hwp)
+
+    def fake_run(command_name: str) -> bool:
+        hwp.commands.append(command_name)
+        return command_name == "Undo"
+
+    monkeypatch.setattr(client, "_run_command", fake_run)
+
+    result = client.discard_last_review_edit()
+
+    assert result.ok
+    assert "Undo" in hwp.commands

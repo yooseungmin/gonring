@@ -22,9 +22,15 @@ dependencies = [
 dev = [
   "pytest>=8.3.0",
 ]
+build = [
+  "pyinstaller>=6.15.0",
+]
 
 [project.scripts]
 haw = "haw.main:cli"
+
+[project.gui-scripts]
+haw-assistant = "haw.main_assistant:main"
 
 [tool.setuptools]
 include-package-data = true

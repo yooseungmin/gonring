@@ -1,6 +1,6 @@
 ﻿# HAW Assistant
 
-Windows-first assistant for guarded rewrite workflows in HWP.
+Windows-first inline AI assistant for guarded rewrite workflows in HWP.
 
 ## Quick Start
 
@@ -8,12 +8,13 @@ Windows-first assistant for guarded rewrite workflows in HWP.
 .\scripts\bootstrap.ps1
 ```
 
-## Validate
+## Run
 
 ```powershell
 .\scripts\smoke_test.ps1
 .\.venv\Scripts\python -m haw.main doctor --strict
 .\.venv\Scripts\python -m haw.main hwp status
+.\.venv\Scripts\python -m haw.main agent start --dock
 ```
 
 ## Core Commands
@@ -21,12 +22,21 @@ Windows-first assistant for guarded rewrite workflows in HWP.
 ```powershell
 .\.venv\Scripts\python -m haw.main --help
 .\.venv\Scripts\python -m haw.main agent start --dock
+.\.venv\Scripts\python -m haw.main agent preview-variants -p "Refine this paragraph" -s "Selected text"
 .\.venv\Scripts\python -m haw.main hwp read-selection
 .\.venv\Scripts\python -m haw.main hwp propose-selection -p "Refine this paragraph"
 .\.venv\Scripts\python -m haw.main hwp show-proposal
 .\.venv\Scripts\python -m haw.main hwp accept-proposal
 .\.venv\Scripts\python -m haw.main hwp reject-proposal
 ```
+
+## Build Windows App
+
+```powershell
+.\scripts\build_exe.ps1
+```
+
+Release notes: [docs/RELEASE.md](/Users/seungmin/Desktop/승민_side%20job/win32COM/gonring/docs/RELEASE.md)
 
 ## Dock UX
 
